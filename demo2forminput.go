@@ -50,28 +50,25 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 	firstname := r.PostFormValue("firstname")
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
-	fmt.Fprintf(w, html, firstname, lastname, username)
 	p := person.Person{
 		Lastname:  lastname,
 		Firstname: firstname,
 		Username:  username,
 		Password:  password,
 	}
-	fmt.Printf(pri, firstname, lastname, username, password, p)
-	db.Create(&p)
-	//db.Create(&person.Person{
-	//	Lastname:  lastname,
-	//	Firstname: firstname,
-	//	Username:  username,
-	//	Password:  password,
-	//})
+	err := db.Create(&p).Error
+	if err != nil {
+		p.Username = "##password not unique##"
+		p.Password = ""
+		fmt.Printf("Error %+v\n", err)
+		templates.ExecuteTemplate(w, "personform", &p)
+	} else {
+		fmt.Printf(pri, firstname, lastname, username, password, p)
+		fmt.Fprintf(w, html, firstname, lastname, username)
+	}
 }
 
 func personForm(w http.ResponseWriter, r *http.Request) {
-	//citynames := make([]string, len(poi.GermanCities))
-	//for i, c := range poi.GermanCities {
-	//	citynames[i] = c.Name()
-	//}
 	if templates != nil {
 		templates.ExecuteTemplate(w, "personform", &person.Person{})
 	}
