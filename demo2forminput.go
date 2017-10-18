@@ -7,6 +7,7 @@ import (
 	"os"
 	"github.com/geobe/go4oosy17/person"
 	"github.com/jinzhu/gorm"
+	"strings"
 )
 
 const html = `<!DOCTYPE html>
@@ -56,11 +57,11 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 		Username:  username,
 		Password:  password,
 	}
-	err := db.Create(&p).Error
-	if err != nil {
-		p.Username = "##password not unique##"
+	//err := db.Create(&p).Error
+	if strings.HasPrefix(p.Username, "##") || db.Create(&p).Error != nil {
+		p.Username = "##Login existiert schon"
 		p.Password = ""
-		fmt.Printf("Error %+v\n", err)
+		fmt.Printf("Username Error\n")
 		templates.ExecuteTemplate(w, "personform", &p)
 	} else {
 		fmt.Printf(pri, firstname, lastname, username, password, p)
