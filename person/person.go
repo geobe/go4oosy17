@@ -4,10 +4,9 @@ import "github.com/jinzhu/gorm"
 
 type Person struct {
 	gorm.Model
-//	ID        uint `gorm:"primary_key"`
 	Lastname  string
 	Firstname string
-	Username  string
+	Username  string	`gorm:"not null;unique"`
 	Password  string
 }
 

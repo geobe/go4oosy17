@@ -13,24 +13,31 @@
             <td><label for="lastname">Nachname</label>
             </td>
             <td>
-                <input id="lastname" name="lastname" size="20" minlength="2" required>
+                <input id="lastname" name="lastname" size="20" minlength="2" required value="{{.Lastname}}">
             </td>
             <td><label for="firstname">Vorname</label>
             </td>
             <td>
-                <input id="firstname" name="firstname" size="20" minlength="2" required>
+                <input id="firstname" name="firstname" size="20" minlength="2" required value="{{.Firstname}}">
             </td>
             <td><label for="username">Login</label>
             </td>
             <td>
-                <input id="username" name="username" size="12" minlength="5" maxlength="12" required>
+                <input id="username" name="username" size="12" minlength="5" maxlength="12" required
+                       value="{{.Username}}">
             </td>
         </tr>
         <tr>
             <td><label for="password">Passwort</label>
             </td>
             <td>
-                <input id="password" name="password" size="20" minlength="8" maxlength="14" required>
+                <input type="password" id="password" name="password" size="14" minlength="2" maxlength="14" required>
+            </td>
+            <td><label for="repeat_password">Passwort wiederholen</label>
+            </td>
+            <td>
+                <input type="password" id="repeat_password" name="repeat_password" size="14" minlength="2"
+                       maxlength="14" required>
             </td>
         </tr>
         <tr>
@@ -44,4 +51,35 @@
 </form>
 </body>
 </html>
+{{end}}
+{{define "personlist"}}
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <title>Personalliste</title>
+</head>
+<body>
+<h1>Personalliste</h1>
+<form method="POST" action="/personlist" name="PersList">
+    <table style="width: 898px; height: 108px;" border="0">
+        <tbody>
+        <tr>
+            <td><label for="perslist">Personen</label>
+            </td>
+            <td>
+                <select id="perslist" size="10" name="persons">
+                    {{range $id, $login := .}}
+                    <option value="{{$id}}">{{$login}}</option>
+                    {{end}}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;
+            </td>
+            <td><input formmethod="post" value="Senden" name="okbutton" type="submit"><br>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
 {{end}}
