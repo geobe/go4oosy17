@@ -53,6 +53,8 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 	firstname := r.PostFormValue("firstname")
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
+	pwrepeat := r.PostFormValue("repeat_password")
+
 	p := person.Person{
 		Lastname:  lastname,
 		Firstname: firstname,
@@ -61,14 +63,23 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 	}
 	model := Viewmodel{
 		"person": &p,
-		"error":  "hurz",
+		"error":  "",
 	}
-	//err := db.Create(&p).Error
-	if db.Create(&p).Error != nil {
-		model["error"] = "Login existiert schon"
+	var dup int
+	var err bool
+	db.Model(&person.Person{}).Where("username = ?", username).Count(&dup)
+	if dup > 0 {
+		model["error"] = "Login existiert schon "
 		p.Username = ""
+		err = true
+	}
+	if password != pwrepeat {
+		model["error"] = model["error"].(string) + "Passworte stimmen nicht überein"
+		err = true
+	}
+	if err {
 		p.Password = ""
-		fmt.Printf("Username Error\n")
+		fmt.Printf("Error %s\n", model["error"])
 		templates.ExecuteTemplate(w, "personform", model)
 	} else {
 		fmt.Printf(pri, firstname, lastname, username, password, p)
