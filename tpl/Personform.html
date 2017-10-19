@@ -6,7 +6,8 @@
 </head>
 <body>
 <h1>Personaldaten bearbeiten</h1>
-<form method="POST" action="/persondata" name="GoIn">
+<form method="POST" action="{{.targeturl}}" name="GoIn">
+    <input type="hidden" name="id" value="{{.person.ID}}">
     <table style="width: 898px; height: 108px;" border="0">
         <tbody>
         {{if .error -}}
