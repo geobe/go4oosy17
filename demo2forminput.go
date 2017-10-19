@@ -7,7 +7,6 @@ import (
 	"os"
 	"github.com/geobe/go4oosy17/person"
 	"github.com/jinzhu/gorm"
-	"strings"
 )
 
 const html = `<!DOCTYPE html>
@@ -29,6 +28,9 @@ Login: %s
 password: %s
 Person: %+v
 `
+
+// allgemeine Map als Schnittstelle zu den Templates
+type Viewmodel map[string]interface{}
 
 var templates *template.Template
 var db *gorm.DB
@@ -57,12 +59,17 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 		Username:  username,
 		Password:  password,
 	}
+	model := Viewmodel{
+		"person": &p,
+		"error":  "hurz",
+	}
 	//err := db.Create(&p).Error
-	if strings.HasPrefix(p.Username, "##") || db.Create(&p).Error != nil {
-		p.Username = "##Login existiert schon"
+	if db.Create(&p).Error != nil {
+		model["error"] = "Login existiert schon"
+		p.Username = ""
 		p.Password = ""
 		fmt.Printf("Username Error\n")
-		templates.ExecuteTemplate(w, "personform", &p)
+		templates.ExecuteTemplate(w, "personform", model)
 	} else {
 		fmt.Printf(pri, firstname, lastname, username, password, p)
 		fmt.Fprintf(w, html, firstname, lastname, username)
@@ -70,8 +77,11 @@ func parsePerson(w http.ResponseWriter, r *http.Request) {
 }
 
 func personForm(w http.ResponseWriter, r *http.Request) {
+	model := Viewmodel{
+		"person": &person.Person{},
+	}
 	if templates != nil {
-		templates.ExecuteTemplate(w, "personform", &person.Person{})
+		templates.ExecuteTemplate(w, "personform", model)
 	}
 }
 
